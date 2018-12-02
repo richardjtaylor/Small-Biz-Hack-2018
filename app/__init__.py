@@ -1,6 +1,7 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from datetime import datetime
+from flask_socketio import SocketIO
 from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 
@@ -12,6 +13,10 @@ app.config.from_object(configuration_file)
 # Setup + SQLAlchemy + Marshmallow
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
+socketio = SocketIO(app)
+
+if __name__ == '__main__':
+    socketio.run(app)
 
 # Import the application views
 from app import views

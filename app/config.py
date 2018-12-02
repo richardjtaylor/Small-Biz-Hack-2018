@@ -12,6 +12,7 @@ class Config(object):
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', get_local_database_url())
     HOST="0.0.0.0"
     PORT = 5000
+    SECRET_KEY = "xxxx"
 
 class ProductionConfig(Config):
     PORT = int(os.environ.get('PORT', 5000))

@@ -5,7 +5,7 @@ from app.exceptions import InvalidInput
 from app.models import Chat, ChatMessage, Estimate, EstimateItem
 from app.schema import chat_schema, chat_message_schema, estimate_schema, estimate_item_schema
 from app.enums import MessageType
-from app import app, db
+from app import app, db, socketio
 import nexmo
 
 @app.errorhandler(InvalidInput)
@@ -22,6 +22,16 @@ def parse_json(request):
     else:
         return json_data
 
+
+@app.route('/message', methods=['POST'])
+def receive_message():
+  if request.is_json:
+    socketio.emit('receive_message', request.get_json())
+  return ('', 204)
+
+@socketio.on('send_message')
+def send_message(message):
+    print(message)
 
 @app.route('/', methods=['GET'])
 def index():

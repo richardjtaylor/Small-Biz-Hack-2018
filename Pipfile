@@ -13,6 +13,7 @@ marshmallow = "*"
 marshmallow-sqlalchemy = "*"
 flask-marshmallow = "*"
 "psycopg2" = "*"
+flask-socketio = "*"
 nexmo = "*"
 
 [dev-packages]
