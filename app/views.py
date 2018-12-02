@@ -93,6 +93,19 @@ def create_chat_message(chat_id, sent_from_self, chat_type, text_body):
 
     # # If the message is an image, save the tags above a threshold
     threshold_value = 0.95
+
+
+    # faucet decomposition
+    # 'https://public.boxcloud.com/api/2.0/internal_files/360496194672/versions/381030778272/representations/jpg_paged_2048x2048/content/1.jpg?access_token=1!Dd4foFOY054sUMMEcwOw7NjfWk3zlmVGq1sMmMccy3nBTdsHwfjjiikVOwCbmoaPKIKfjyDV-_Skqx796yprxKll_0_yrzebSb2EH6Sk-2dgBecqKJD_MEdrhQeF1Fs8dgJFCskYhJsrhynU7hrsUFiB5VdGZDUtyGx9SZnh4ROg3bdKmdajmzwnfLmM5Dy1aCey4F0SFJlzLb9y2_Dv5_RmD1-n_4ow7W1PTNqfc5p0da1H65fOpbniIilazdRG_LALm3pltT8iiKOvi-cCwlFaE2Ppi-zPtB-JwuaUXCkp3dG7MzBiHyXEx8T2K_4sN3Wv0EgKpXAkwqfMM-wAsJOT5RIoWwEeRyOSBKFaWcTONKWg7i-f90EYCrXYlT-AP1h5UOM3sAn1PPSgeoKUu0gV9kl7gosfAb-G6te-R_hvB6wTpXg7um4yEk6JQ4oIL2iWrzkBYlh7XKKsaKf8dBfR0-lb25g6_WRaMLrEn31Y_-nTpiMoM19GmRjQAbjsv_Hd7DmIder5s7Ol88tteSPtoL2cz6Qdeia8KG8LwXqEmmHl-CRwRHDQEICrSEa8iA..&box_client_name=box-content-preview&box_client_version=1.58.3'
+    # 
+    # wire box 1
+    # 'https://public.boxcloud.com/api/2.0/internal_files/360501824794/versions/381036647194/representations/jpg_paged_2048x2048/content/1.jpg?access_token=1!n2dUsFV2tMUbmT2l2T4fIn-65tTyGpNgQH4izNUgIj9KZ1JLV2wpT5PJlPPe-ibWcdGgoeUWQHBgfc37_yMSKaxbPjspzeU93tsfzM6JW9nXNuWUQ6g0dkxxRbgyVdyPUQgshm2bUSugxmyPKuiveK9hTIToMBOCTBTn6h8duxB8kRvFy3c9sVERKvHoV5ekLPHf-2pqc1TdGOki4xx0EGNxDalzi-fpHck8KIq1crE9HpRN1h1yiMRiiGIVfbNpxYtm-y9Jv6hDXCcI0OkqGUscCzQ1UNz1YhV06yJqSHj2sFlYeuIS851-Nkn0plV9krVrK9OwM0Vuyjkr5_PkbqRx0zF5kbwLjsRVot8IiKl0M7Z1V2dVyL9V9czuXlvMbnYOm7kkZslMzWR9RTd5OolDp0d8Hjyv9Q6qAwXK_NQrQhT-DM1hKO_usYUhdWW79OlSfAw19yMe7WQuQ8IuhGYwDH2txCFXJzpHDWmynNd-bIC_m7EqFm7R12TYBD9Gg0uKJfV5Ha6TZAQ1GTqlh-4S3FdJpS0MQjn5VeHryCMDo0TAYBqhveViedUcujQk1g..&box_client_name=box-content-preview&box_client_version=1.58.3'
+    # 
+    # wire box 2
+    # 'https://public.boxcloud.com/api/2.0/internal_files/360496136625/versions/381030773025/representations/jpg_paged_2048x2048/content/1.jpg?access_token=1!8H_WgzZ80XB6naFRk4sbVC4jWK3MbE-ES6D7WbQMGbHmIyIkifa9HM3WJL_cGot46TDeemjCJfo84ma3MxdqUzZdv-ZhmLCfEAVaI7RZXrq_2yrjcZSEqATMviiXYdJaaBexDwjS8OUzMSHT-KZ7zekZ-aFLTx8W48TdLN4XLS0omiCIndNqQZWQs8TgJgkGbNeCn9EX0VFvMe721Pn5gAwZR5jLpBJXXlulsX1dKB6iyXCMLi2uy-z4bfat8S3vwJecUuznVU_kU3I_W3cPq31Luvxzv7kcUKsUwaPc4umf5h2ndbvJekLyTDOozeM8clYLd2GshJCIP2RJZOBrS2DO5W5FOvTRMpfheipCF4PFGHiaPJivRTW2vHiG-P6pPncGcN0uZI9InEk-liACHFv1T52Br4a1YmY1L-oVRCpEHc-vnMjmpQGop228K1WFdReMeFWBfwY2aj34WUS8fgPEhllmFi_b6k-7r4TMA_Zjs_vbKm-5KA15OhOrsP0swQLB4_hkNLhQ1Fm2926Ra3SBC6jvsoxvxwXe0gLtrncMmgPrffgIGoV8LfvUAykAlA..&box_client_name=box-content-preview&box_client_version=1.58.3'
+    # 
+    # 
+
     
     try:
         # # temporary while we have no images, set to text
