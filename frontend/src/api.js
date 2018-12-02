@@ -15,3 +15,9 @@ export const send_message = (type, text_body) => {
     response => {}
   );
 };
+
+export const receive_images = cb => {
+  socket.on("receive_images", response => {
+    cb(response);
+  });
+};

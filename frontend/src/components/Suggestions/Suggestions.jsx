@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { send_message } from "../../api";
+import { send_message, receive_images } from "../../api";
 
 const SuggestedImageContainer = styled.div`
   max-height: 100%;
@@ -42,6 +42,13 @@ const SuggestedImage = styled.div`
 export class Suggestions extends Component {
   constructor(props) {
     super(props);
+    this.state = { images: [] };
+    receive_images(newImages => {
+      if (!!newImages) {
+        //don't show empty messages that seem to pop up
+        this.setState({ images: [...newImages] });
+      }
+    });
   }
 
   sendPreviousJob = (url = "https://bit.ly/2FRw47x") => {
@@ -49,20 +56,21 @@ export class Suggestions extends Component {
   };
 
   generateSuggestedImageFeed = () => {
-    const x = [1, 2, 3, 4, 5, 6];
-    return x.map(y => {
+    return this.state.images.map((y, i, arr) => {
       return (
         <SuggestedImageRow>
           <SuggestedImage
             onClick={() => this.sendPreviousJob()}
             style={{
-              backgroundImage: "url(https://bit.ly/2FRw47x)"
+              backgroundImage: `url(${arr[i]})`
             }}
           />
           <SuggestedImage
             onClick={() => this.sendPreviousJob()}
             style={{
-              backgroundImage: "url(https://bit.ly/2FRw47x)"
+              backgroundImage: `url(${
+                !!arr[i + 1] ? "arr[i+1]" : "https://bit.ly/2zEGNfZ"
+              })`
             }}
           />
         </SuggestedImageRow>

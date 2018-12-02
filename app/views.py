@@ -10,6 +10,8 @@ import nexmo
 from clarifai.rest import ClarifaiApp
 from clarifai.rest import Image as ClImage
 
+IMAGES = ["http://loremflickr.com/320/240/dog","http://loremflickr.com/320/240/dog","http://loremflickr.com/320/240/dog","http://loremflickr.com/320/240/dog"]
+
 @app.errorhandler(InvalidInput)
 def handle_invalid_usage(error):
     response = jsonify(error.to_dict())
@@ -59,8 +61,6 @@ def return_all_messages():
     return chat_messages_schema.jsonify(messages)
 
 
-
-
 @socketio.on('send_message')
 def send_message(json):
     text_body = json.get('text_body', '')
@@ -101,6 +101,7 @@ def create_chat_message(chat_id, sent_from_self, chat_type, text_body):
             response = predict_image(img)
             chat_message.type = 1
             chat_message.text_body = img
+            #socketio.emit('receive_images', )
         elif ('keyword2' in text_body):
             response = predict_image('https://public.boxcloud.com/api/2.0/internal_files/360359850255/versions/380887063455/representations/jpg_paged_2048x2048/content/1.jpg?access_token=1!E613Lu64PJAAs1PIcDRKD9LhYBC09LPTsWTZN-_O3u2ZiqllQDXIvxlUYiDzcTwHIvHEdoVQWoJ0KbD1iogN_TAVU_L-u64haQ8nsI5CfYyJ2s7HNN0uwqqC6iMlNEm3BFtLQXpbqKYsFL90BQuUJtEHrvhsYEqlJPFM1dwNF-GoXblT44ozisZascnhXauv4Md-7WmyF7CeI3yr52Tx0auH5bZvcCOVaL5YiqdpoECL7CHTmFwjviFGHjnrIKcI2YdDq_xB6yHkAx_-xQ-5JJral1CXThArLLtmezS7d4gJx-kotbIQs0pxf2zPek4E4B0k9wyH33LIr6WXTbpCchSSATLH66jZdGw713JdR7gglERULx2N7K5_a7ts5Jym-IHWK_lHuID_-2T7p-nZfuRKl7wRjieUmT-jzUkj4off-KQK50P8gJAk1ie2vn4bhb-Hd8A3MfWP4YrF-3Uhl8eQ84x8HYrEmhV2jdAi8rQYi_d_HPGdU1pk5vn2sFNfI0J4Q8yLSbXqeEbxZV40lIq7HSzCe39lX1BDgqHRstEiOaw3AqW9BySZP43-6DpCbA..&box_client_name=box-content-preview&box_client_version=1.58.3')
         elif ('keyword3' in text_body):
@@ -129,7 +130,7 @@ def create_image_tag(chat_message_id, tag_name):
     db.session.add(image_tag)
 
     # # Commit to db
-    # db.session.commit()
+    db.session.commit()
 
 
 
@@ -145,6 +146,7 @@ def index():
 
     # return jsonify({'message': 'Hellewwww'})
     return return_all_messages(None)
+
 
 
 
