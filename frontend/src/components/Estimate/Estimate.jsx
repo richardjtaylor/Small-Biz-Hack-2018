@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { palette } from "styled-theme";
 import { Flex, Box } from "@rebass/grid";
 import { send_message } from "../../api";
+const URL = "http://localhost:5000";
 
 const EstimateContainer = styled.div`
   height: 50vh;
@@ -181,6 +182,17 @@ export class Estimate extends Component {
     send_message(0, message);
   };
 
+  createQBEstimate = async () => {
+    await fetch(`${URL}/create_estimate`, {
+      method: "POST", // or 'PUT'
+      //body: JSON.stringify(data), // data can be `string` or {object}!
+      headers: {
+        "Content-Type": "application/json"
+      },
+      mode: "cors"
+    });
+  };
+
   render() {
     return (
       <EstimateContainer>
@@ -214,7 +226,9 @@ export class Estimate extends Component {
                 <EstimateButton onClick={() => this.sendEstimate()}>
                   {"< Update Neil"}
                 </EstimateButton>
-                <EstimateButton>{"Generate Estimate >"}</EstimateButton>
+                <EstimateButton onClick={() => this.createQBEstimate()}>
+                  {"Generate Estimate >"}
+                </EstimateButton>
               </Flex>
             </Box>
           </Flex>
