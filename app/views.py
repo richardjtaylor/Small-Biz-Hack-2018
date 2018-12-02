@@ -2,9 +2,9 @@ import uuid, os, re
 from datetime import datetime
 from flask import render_template, request, redirect, jsonify
 from app.exceptions import InvalidInput
-#from app.models import Player, GamePlayer, Game
-#from app.schema import players_schema, player_schema, games_schema, game_schema
-#from app.enums import GameOutcome
+from app.models import Chat, ChatMessage, Estimate, EstimateItem
+from app.schema import chat_schema, chat_message_schema, estimate_schema, estimate_item_schema
+from app.enums import MessageType
 from app import app, db
 
 @app.errorhandler(InvalidInput)

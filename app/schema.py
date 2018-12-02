@@ -1,25 +1,32 @@
 from marshmallow import fields
-#from app.models import Player, GamePlayer, Game
+from app.models import Chat, ChatMessage, Estimate, EstimateItem
 from app import ma
 
-# class PlayerSchema(ma.ModelSchema):
-#     class Meta:
-#         fields = ('id', 'name', 'rank', 'image_url', 'wins', 'losses', 'ties')
-#         model = Player
+class EstimateItemSchema(ma.ModelSchema):
+    class Meta:
+        fields = ('id', 'estimate_id')
+        model = EstimateItem
 
-# class GamePlayerSchema(ma.ModelSchema):
-#     class Meta:
-#         fields = ('player', 'score')
-#         model = GamePlayer
-#     player = fields.Nested(PlayerSchema)
+class EstimateSchema(ma.ModelSchema):
+    class Meta:
+        fields = ('id', 'chat_id', 'estimate_items')
+        model = Estimate
+    estimate_items = fields.Nested(EstimateItemSchema, many=True)
 
-# class GameSchema(ma.ModelSchema):
-#     class Meta:
-#         fields = ('id', 'date', 'players')
-#         model = Game      
-#     players = fields.Nested(GamePlayerSchema, many=True)
-        
-# player_schema = PlayerSchema()
-# players_schema = PlayerSchema(many=True)
-# game_schema = GameSchema()
-# games_schema = GameSchema(many=True)
+class ChatMessageSchema(ma.ModelSchema):
+    class Meta:
+        fields = ('id', 'chat_id', 'sent_from_self', 'type', 'text_body')
+        model = ChatMessage
+
+class ChatSchema(ma.ModelSchema):
+    class Meta:
+        fields = ('id', 'chat_messages', 'estimates')
+        model = Chat
+    chat_messages = fields.Nested(ChatMessageSchema, many=True)
+    estimates = fields.Nested(EstimateSchema, many=True)
+
+
+chat_schema = ChatSchema()
+chat_message_schema = ChatMessageSchema()
+estimate_schema = EstimateSchema()
+estimate_item_schema = EstimateItemSchema()
