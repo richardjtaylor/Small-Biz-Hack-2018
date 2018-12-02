@@ -25,13 +25,23 @@ def parse_json(request):
 
 @app.route('/message', methods=['POST'])
 def receive_message():
+  print(request.__dict__)
   if request.is_json:
     socketio.emit('receive_message', request.get_json())
+  else:
+    data = dict(request.form) or dict(request.args)
+    print(data)
   return ('', 204)
 
 @socketio.on('send_message')
 def send_message(message):
-    print(message)
+  print(message)
+  client = nexmo.Client(key='c6b89e5c', secret='NiwYj5KhU1ycZFTw')
+  client.send_message({
+      'from': '12262403107',
+      'to': '16139211286',
+      'text': 'Hey, get fucked.',
+  })
 
 @app.route('/', methods=['GET'])
 def index():
