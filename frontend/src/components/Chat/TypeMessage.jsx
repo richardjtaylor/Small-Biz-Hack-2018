@@ -5,11 +5,11 @@ import { palette } from "styled-theme";
 const Container = styled.div`
   border-top: 1px solid #c4c4c4;
   position: relative;
-  height: 100%;
+  padding: 0 10px;
 `;
 
 const InputSendButton = styled.button`
-  background: ${palette("black", 0)} none repeat scroll 0 0;
+  background: ${palette("primary", 0)} none repeat scroll 0 0;
   border: medium none;
   border-radius: 50%;
   color: #fff;
@@ -17,15 +17,16 @@ const InputSendButton = styled.button`
   font-size: 17px;
   height: 33px;
   position: absolute;
-  right: 0;
-  top: 11px;
+  right: 5px;
+  top: 7px;
   width: 33px;
 `;
 
 const InputMessageWrite = styled.input`
   background: ${palette("white", 0)} none repeat scroll 0 0;
   border: medium none;
-  color: #4c4c4c;
+  color: ${palette("grayscale", 2)};
+  outline: none;
   font-size: 15px;
   min-height: 48px;
   width: 100%;

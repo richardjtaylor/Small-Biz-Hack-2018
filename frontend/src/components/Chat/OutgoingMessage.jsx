@@ -8,11 +8,11 @@ const OutgoingMessageContainer = styled.div`
 `;
 
 const SentMessageParagraph = styled.div`
-  background: #05728f none repeat scroll 0 0;
+  background: ${palette("primary", 0)} none repeat scroll 0 0;
   border-radius: 3px;
   font-size: 14px;
   margin: 0;
-  color: #fff;
+  color: ${palette("white", 0)};
   padding: 5px 10px 5px 12px;
 `;
 
@@ -22,7 +22,7 @@ const SentMessage = styled.div`
 `;
 
 const MessageTime = styled.span`
-  color: #747474;
+  color: ${palette("grayscale", 4)};
   display: block;
   font-size: 12px;
   margin: 8px 0 0;

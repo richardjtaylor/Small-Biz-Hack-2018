@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { receive_message } from "./api";
-import Grid from "styled-components-grid";
+import { Flex, Box } from "@rebass/grid";
 import { createGlobalStyle, ThemeProvider } from "styled-components";
 import { Chat, Suggestions, Estimate } from "./components";
 import theme from "./theme";
@@ -9,7 +9,13 @@ const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
     width: 100%;
-    font-family: Helvetica;
+    font-family: 'Titillium Web', sans-serif;
+  }
+
+  #root {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
   }
 `;
 
@@ -26,33 +32,28 @@ class App extends Component {
     });
   }
 
-  send = () => {
-    console.log("here");
-    // socket.emit("ferret", "tobi", data => {
-    //   console.log(data); // data will be 'woot'
-    // });
-  };
-
   render() {
     //return <div>Message: {this.state.message}</div>;
     return (
       <ThemeProvider theme={theme}>
-        <React.Fragment>
+        <Box flex="1">
           <GlobalStyle />
-          <Grid>
-            <Grid.Unit size={5 / 8}>
+          <Flex style={{ height: "100vh" }}>
+            <Box width={5 / 8}>
               <Chat />
-            </Grid.Unit>
-            <Grid.Unit size={3 / 8}>
-              <Grid.Unit>
-                <Estimate />
-              </Grid.Unit>
-              <Grid.Unit>
-                <Suggestions />
-              </Grid.Unit>
-            </Grid.Unit>
-          </Grid>
-        </React.Fragment>
+            </Box>
+            <Box width={3 / 8}>
+              <Flex flexDirection="column">
+                <Box flex="1">
+                  <Estimate />
+                </Box>
+                <Box flex="1">
+                  <Suggestions />
+                </Box>
+              </Flex>
+            </Box>
+          </Flex>
+        </Box>
       </ThemeProvider>
     );
   }
