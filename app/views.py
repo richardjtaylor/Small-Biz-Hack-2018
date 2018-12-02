@@ -1,4 +1,4 @@
-import uuid, os, re
+import uuid, os, re, requests, json
 from datetime import datetime
 from flask import render_template, request, redirect, jsonify
 from app.exceptions import InvalidInput
@@ -9,6 +9,7 @@ from app import app, db, socketio
 import nexmo
 from clarifai.rest import ClarifaiApp
 from clarifai.rest import Image as ClImage
+
 
 @app.errorhandler(InvalidInput)
 def handle_invalid_usage(error):
@@ -137,20 +138,17 @@ def create_image_tag(chat_message_id, tag_name):
 @app.route('/', methods=['GET'])
 def index():
 
-    # setup params
-    chat_id = None
-    type = 0
-    text_body = 'keyword2'
+    create_qb_estimate()
 
-    send_message(chat_id, type, text_body)
+    # setup params
+    # chat_id = None
+    # type = 0
+    # text_body = 'keyword2'
+
+    # send_message(chat_id, type, text_body)
 
     # return jsonify({'message': 'Hellewwww'})
-    return return_all_messages(None)
-
-
-
-
-
+    return return_all_messages()
 
 
 
@@ -164,5 +162,134 @@ def predict_image(url):
     # print(response)
 
     return response
+
+
+@app.route('/create_estimate', methods=['POST'])
+def create_qb_estimate():
+    headers = {
+        "Content-Type" : "application/json",
+        "Authorization" : "Bearer eyJlbmMiOiJBMTI4Q0JDLUhTMjU2IiwiYWxnIjoiZGlyIn0..w_hu_y6rc-Q9RmhyDnnE2Q.8swDfXGYqxJd2Pt4GxBH1ak1Wbhqs7p-5wpg3-zM4oB_YvefFRhY8BTKSxOI5xsRVHDnTbQXmOfVFOZjzRhCBTDRYrJLShaRW6-8nBvQGo_HrMiT6uyh2d3-dV4uAI0lGGRGUXLra9KGPHP0PD20KWNiw6bpCZ0BmG9ODw_-fta59DFppVkKoy11zJhYjMOStYYqVDdL_43fVgmsEnk2QNmGG82yrztj7AnedWhYGLpKJHb5x7aW1YvbXCmkrt-2LRcnM3MOtZPHBrZqBoAlwToa51hobIET4bkhU2PP_nUCOd2mUZzuFibFK5oMSgRWv6Udb5qWv2cmMq1oL8jPT9aWhk-2Gz0_f08vPXyYuG6Pbb_hUaiZ0lRwvGgZPozrOng4Lj8tR__I7uhOxjey3LCLdFBiy6CJNpRWkl4iwehWliUgndvMyTiBPHetQhv29-jfo1QWnLldsey1n1aYLuuEBIcEqVzExAcvyAE7df5vQ3Kx-gTH_SRdKvXddmMa_Ehw0XVdIa2lcUSwnLQ8W-4l_2vlxaWcGOhFb2I01VPd6il0I7kz3yaBdBySP1oBYQ2qRGAWppt22_b1_sV9gDclH-sA082BU8aYSmsW1OuOfzNLREs8XtKVOKdK3q3wuE8WvdL0q6vacUfvIh09UeRmyNWVndOR76UBeaz94rIwK6NdHvRxtwJFFt6fF355.P2gKPPFZFW_gzU1DlY70pw"
+    }
+
+    payload = {
+                "TotalAmt": 90.0, 
+                "BillEmail": {
+                    "Address": "neil.armstrong@nasa.com"
+                }, 
+                "CustomerMemo": {
+                    "value": "Thank you for your business and have a great day!"
+                }, 
+                "ShipAddr": {
+                    "City": "Toronto", 
+                    "Line1": "102 Fern Street", 
+                    "PostalCode": "M6R2G1", 
+                    "Lat": "-79.444934", 
+                    "Long": "43.645474", 
+                    "CountrySubDivisionCode": "CA", 
+                    "Id": "5"
+                }, 
+                "PrintStatus": "NeedToPrint", 
+                "EmailStatus": "NotSet", 
+                "BillAddr": {
+                    "City": "Toronto", 
+                    "Line1": "102 Fern Street", 
+                    "PostalCode": "M6R2G1", 
+                    "Lat": "-79.444934", 
+                    "Long": "43.645474", 
+                    "CountrySubDivisionCode": "CA", 
+                    "Id": "5"
+                }, 
+                "Line": [
+                    {
+                        "Description": "Line 1 Description", 
+                        "DetailType": "SalesItemLineDetail", 
+                        "SalesItemLineDetail": {
+                        "TaxCodeRef": {
+                        "value": "NON"
+                        }, 
+                        "Qty": 4, 
+                        "UnitPrice": 15, 
+                        "ItemRef": {
+                        "name": "Line 1", 
+                        "value": "19"
+                        }
+                        }, 
+                        "LineNum": 1, 
+                        "Amount": 60.0
+                    },
+                    {
+                        "Description": "Line 2 Description", 
+                        "DetailType": "SalesItemLineDetail", 
+                        "SalesItemLineDetail": {
+                        "TaxCodeRef": {
+                        "value": "NON"
+                        }, 
+                        "Qty": 1, 
+                        "UnitPrice": 15, 
+                        "ItemRef": {
+                        "name": "Line 2", 
+                        "value": "20"
+                        }
+                        }, 
+                        "LineNum": 1, 
+                        "Amount": 15.0
+                    },
+                    {
+                        "Description": "Line 3 Description", 
+                        "DetailType": "SalesItemLineDetail", 
+                        "SalesItemLineDetail": {
+                        "TaxCodeRef": {
+                        "value": "NON"
+                        }, 
+                        "Qty": 1, 
+                        "UnitPrice": 15, 
+                        "ItemRef": {
+                        "name": "Line 3", 
+                        "value": "21"
+                        }
+                        }, 
+                        "LineNum": 1, 
+                        "Amount": 15.0
+                    }, 
+                    {
+                        "DetailType": "SubTotalLineDetail", 
+                        "Amount": 90.0, 
+                        "SubTotalLineDetail": {}
+                    }
+                    # , 
+                    # {
+                    #     "DetailType": "DiscountLineDetail", 
+                    #     "Amount": 3.5, 
+                    #     "DiscountLineDetail": {
+                    #         "DiscountAccountRef": {
+                    #             "name": "Discounts given", 
+                    #             "value": "86"
+                    #         }, 
+                    #         "PercentBased": "true", 
+                    #         "DiscountPercent": 10
+                    #     }
+                    # }
+                    ], 
+                # "CustomerRef": {
+                #     "name": "King's Groceries", 
+                #     "value": "58"
+                # }, 
+                "CustomerRef": {
+                    "name": "Neil Armstrong", 
+                    "value": "59"
+                }, 
+                "TxnTaxDetail": {
+                    "TotalTax": 0
+                }, 
+                "ApplyTaxAfterDiscount": "false"
+            }
+
+    url = 'https://sandbox-quickbooks.api.intuit.com/v3/company/123146197849054/estimate'
+    r = requests.post(url, data=json.dumps(payload), headers=headers)
+
+    print('\n\n\n\n')
+    print(r.text)
+
+
 
 

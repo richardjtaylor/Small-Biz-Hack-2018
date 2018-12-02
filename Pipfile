@@ -17,6 +17,7 @@ flask-socketio = "*"
 nexmo = "*"
 clarifai = "*"
 flask-cors = "*"
+requests = "*"
 
 [dev-packages]
 
