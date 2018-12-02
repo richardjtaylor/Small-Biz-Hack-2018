@@ -5,7 +5,7 @@ from app.exceptions import InvalidInput
 #from app.models import Player, GamePlayer, Game
 #from app.schema import players_schema, player_schema, games_schema, game_schema
 #from app.enums import GameOutcome
-from app import app, db
+from app import app, db, socketio
 
 @app.errorhandler(InvalidInput)
 def handle_invalid_usage(error):
@@ -20,6 +20,12 @@ def parse_json(request):
   else:
     return json_data
 
-@app.route('/', methods=['GET'])
-def index():
-  return jsonify({'message': 'Hellewwww'})
+@app.route('/message', methods=['POST'])
+def receive_message():
+  if request.is_json:
+    socketio.emit('receive_message', request.get_json())
+  return ('', 204)
+
+@socketio.on('send_message')
+def send_message(message):
+    print(message)
