@@ -34,7 +34,6 @@ const InputMessageWrite = styled.input`
 
 const TypeMessage = ({ onSend, onChange, message }) => {
   const onKeyPress = e => {
-    console.log("e:key: ", e.key);
     if (e.key == "Enter") {
       onSend();
     }

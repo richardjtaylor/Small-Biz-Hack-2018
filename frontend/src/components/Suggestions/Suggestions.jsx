@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import { send_message } from "../../api";
 
 const SuggestedImageContainer = styled.div`
   max-height: 100%;
@@ -7,6 +8,7 @@ const SuggestedImageContainer = styled.div`
 
 const SuggestionHeader = styled.div`
   height: 50px;
+  width: auto;
   text-align: center;
   width: 100%;
   padding: 3px;
@@ -24,10 +26,17 @@ const SuggestedImageRow = styled.div`
 `;
 
 const SuggestedImage = styled.div`
+  background-repeat: no-repeat;
+  background-size: contain;
   flex: 1;
-  height: 200px;
+  height: 150px;
   width: 80px;
   margin: 10px;
+  cursor: pointer;
+  &:hover {
+    box-shadow: 0 10px 16px 0 rgba(0, 0, 0, 0.2),
+      0 6px 20px 0 rgba(0, 0, 0, 0.19) !important;
+  }
 `;
 
 export class Suggestions extends Component {
@@ -35,19 +44,25 @@ export class Suggestions extends Component {
     super(props);
   }
 
+  sendPreviousJob = (url = "https://bit.ly/2FRw47x") => {
+    send_message(1, url);
+  };
+
   generateSuggestedImageFeed = () => {
     const x = [1, 2, 3, 4, 5, 6];
     return x.map(y => {
       return (
         <SuggestedImageRow>
           <SuggestedImage
+            onClick={() => this.sendPreviousJob()}
             style={{
-              background: "url(https://bit.ly/2FRw47x) 50% 50% no-repeat"
+              backgroundImage: "url(https://bit.ly/2FRw47x)"
             }}
           />
           <SuggestedImage
+            onClick={() => this.sendPreviousJob()}
             style={{
-              background: "url(https://bit.ly/2FRw47x) 50% 50% no-repeat"
+              backgroundImage: "url(https://bit.ly/2FRw47x)"
             }}
           />
         </SuggestedImageRow>

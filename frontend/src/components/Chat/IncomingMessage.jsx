@@ -4,7 +4,7 @@ import { palette } from "styled-theme";
 
 const ReceivedMessage = styled.div`
   display: inline-block;
-  padding: 0 0 0 10px;
+  padding: 0 0 25px 10px;
   vertical-align: top;
   width: 60%;
 `;
@@ -24,7 +24,9 @@ const ReceivedMessageImage = styled.div`
   margin: 0;
   padding: 5px 10px 5px 12px;
   width: auto;
-  height: 300px;
+  height: 200px;
+  background-repeat: no-repeat;
+  background-size: contain;
 `;
 
 const MessageTime = styled.span`
@@ -34,25 +36,39 @@ const MessageTime = styled.span`
   margin: 8px 0 0;
 `;
 
+const ImageLabel = styled.span`
+  color: ${palette("grayscale", 3)};
+  border-bottom: ${palette("grayscale", 3)} 1px solid;
+  font-size: 12px;
+  margin: 8px 0 0;
+  padding: 0 5px;
+  display: "inline-block";
+`;
+
 const IncomingMessage = ({ message }) => {
   const generateBody = () => {
     return message.type === 0 ? (
-      <ReceivedMessageParagraph>{message.text_body}</ReceivedMessageParagraph>
+      <div>
+        <ReceivedMessageParagraph>{message.text_body}</ReceivedMessageParagraph>
+        <MessageTime> 11:01 AM | Today</MessageTime>
+      </div>
     ) : (
-      <ReceivedMessageImage
-        style={{ backgroundImage: `url(${message.text_body})` }}
-      />
+      <div>
+        <ReceivedMessageImage
+          style={{ backgroundImage: `url(${message.text_body})` }}
+        />
+        <div style={{ width: "60%" }}>
+          {message.image_tags.map(tag => (
+            <ImageLabel>{tag.name}</ImageLabel>
+          ))}
+        </div>
+      </div>
     );
   };
 
   return (
     <div>
-      <ReceivedMessage>
-        <div>
-          {generateBody()}
-          <MessageTime> 11:01 AM | Today</MessageTime>
-        </div>
-      </ReceivedMessage>
+      <ReceivedMessage>{generateBody()}</ReceivedMessage>
     </div>
   );
 };

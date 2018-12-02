@@ -16,6 +16,16 @@ const SentMessageParagraph = styled.div`
   padding: 5px 10px 5px 12px;
 `;
 
+const SentMessageImage = styled.div`
+  border-radius: 3px;
+  margin: 0;
+  padding: 5px 10px 5px 12px;
+  width: auto;
+  height: 200px;
+  background-repeat: no-repeat;
+  background-size: contain;
+`;
+
 const SentMessage = styled.div`
   float: right;
   width: 50%;
@@ -29,12 +39,25 @@ const MessageTime = styled.span`
 `;
 
 const OutgoingMessage = ({ message }) => {
+  const generateBody = () => {
+    return message.type === 0 ? (
+      <div>
+        <SentMessageParagraph>{message.text_body}</SentMessageParagraph>
+        <MessageTime> 11:01 AM | Today</MessageTime>
+      </div>
+    ) : (
+      <div>
+        <SentMessageImage
+          style={{ backgroundImage: `url(${message.text_body})` }}
+        />
+        <MessageTime> 11:01 AM | Today</MessageTime>
+      </div>
+    );
+  };
+
   return (
     <OutgoingMessageContainer>
-      <SentMessage>
-        <SentMessageParagraph>{message.text_body}</SentMessageParagraph>
-        <MessageTime> 11:01 AM | June 9</MessageTime>
-      </SentMessage>
+      <SentMessage>{generateBody()}</SentMessage>
     </OutgoingMessageContainer>
   );
 };
