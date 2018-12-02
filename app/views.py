@@ -2,7 +2,7 @@ import uuid, os, re
 from datetime import datetime
 from flask import render_template, request, redirect, jsonify
 from app.exceptions import InvalidInput
-from app.models import Chat, ChatMessage, Estimate, EstimateItem
+from app.models import Chat, ChatMessage, Estimate, EstimateItem, ImageTag
 from app.schema import chat_schema, chat_message_schema, chat_messages_schema, estimate_schema, estimate_item_schema
 from app.enums import MessageType
 from app import app, db, socketio
@@ -83,33 +83,43 @@ def create_chat_message(chat_id, sent_from_self, type, text_body):
     chat_message = ChatMessage(chat_id=chat_id, sent_from_self=sent_from_self, type=type, text_body=text_body)
     db.session.add(chat_message)
 
+    # Flush...?
+    db.session.flush()
+
+
+
+    # # If the message is an image, save the tags above a threshold
+    threshold_value = 0.95
+    
+    # # temporary while we have no images, set to text
+    if ('keyword1' in text_body):
+        response = predict_image('https://public.boxcloud.com/api/2.0/internal_files/360357061737/versions/380883820137/representations/jpg_paged_2048x2048/content/1.jpg?access_token=1!tXTIrfTKpLSZ5MlYCWOQYQHSoMYaO7-bTkSM0g0j1RHCZcTMSUJ0RbzK4dLGTfVSW-3t4jb5bW1RSzdW8zB_S8MXVZsLUCglYQvEWZi3IHQRK5dYCEYg0JcuGPqlAc_IQByHw0yTovYCefr1PW_xa1vlmb2uNmWaoCYpVJXvoZ89oblCtRCH171dq0_2wmk6mMALBpmCzRHCnQ8yumufdn1WC-dJr639qes6yB3Jrt_0pCWsIAYlYgZXEaZYFt4fxLZ9KJaVTHqt_D1qvWwq8K0ibC-1cq5_7QJMK1f_2wD7lpLWSaJYK64rC_Vpi6gFN6CfArT66PjiUrj8HsxzBM_POYZUeNzvQGZoOxgREMfP1IPx72lrOZpf_jfXG45AMC6No2rgWbki7HvZJKpK2faBF66Vr9kSkMxKqvU04ZQ7lmzKNFqMBEqWvGBAR1_K6TG0TbDggBRuWR5A6xrRXjBHa3C_U3X2FMzAzT0QDIuk5QUtzftWMnncM6-aP4B9Pt1zTUnTK6Ol_UZqF9ae-iryRPP2LPaBBw5dzdlhPvZTWFbSqn93zOMVMgO_bywIYw..&box_client_name=box-content-preview&box_client_version=1.58.3')
+    elif ('keyword2' in text_body):
+        response = predict_image('https://public.boxcloud.com/api/2.0/internal_files/360359850255/versions/380887063455/representations/jpg_paged_2048x2048/content/1.jpg?access_token=1!E613Lu64PJAAs1PIcDRKD9LhYBC09LPTsWTZN-_O3u2ZiqllQDXIvxlUYiDzcTwHIvHEdoVQWoJ0KbD1iogN_TAVU_L-u64haQ8nsI5CfYyJ2s7HNN0uwqqC6iMlNEm3BFtLQXpbqKYsFL90BQuUJtEHrvhsYEqlJPFM1dwNF-GoXblT44ozisZascnhXauv4Md-7WmyF7CeI3yr52Tx0auH5bZvcCOVaL5YiqdpoECL7CHTmFwjviFGHjnrIKcI2YdDq_xB6yHkAx_-xQ-5JJral1CXThArLLtmezS7d4gJx-kotbIQs0pxf2zPek4E4B0k9wyH33LIr6WXTbpCchSSATLH66jZdGw713JdR7gglERULx2N7K5_a7ts5Jym-IHWK_lHuID_-2T7p-nZfuRKl7wRjieUmT-jzUkj4off-KQK50P8gJAk1ie2vn4bhb-Hd8A3MfWP4YrF-3Uhl8eQ84x8HYrEmhV2jdAi8rQYi_d_HPGdU1pk5vn2sFNfI0J4Q8yLSbXqeEbxZV40lIq7HSzCe39lX1BDgqHRstEiOaw3AqW9BySZP43-6DpCbA..&box_client_name=box-content-preview&box_client_version=1.58.3')
+    elif ('keyword3' in text_body):
+        response = predict_image('https://public.boxcloud.com/api/2.0/internal_files/360354805906/versions/380881649506/representations/jpg_paged_2048x2048/content/1.jpg?access_token=1!b3vHOkPPU3NqKvvthauaIhKPNOZdHWuFteeK_GKSBAMPEny4loNT-_pISpHVSm6DO6VnEvgZZVAz2osA1Lyq662rWVIiE9Wp3UjnLBa3d8y0HFtS6M4V8aDnHz7mOiRd19GlOP81GR6RA0Nz00DifTdzPYGYjLYfvBum4z53TpwAM-ZSUCXPf45JWWwZ8BksQOxucBdb1CMsPSLARr_l-zW7zYKpcvd-dpo38Cw1I2T4HYJXrNmlhMuolCo-mSegAqHuwp40q_qw-YrZejbJ1NpjA5b-2OJtMxhhijNjSunZnRxk1BESkilIVM0wDzEn5pnFhPuHWoKoSxvcYUp7fHt4L_rnKt5sRdX5hnjM6OjnsGjNYMyYiig0bY4tH6dWOWeUAaSYce4tl7yFioHoNw9nrd0Ja4hKkhxXs4gRVpO8BuCz_mDenTJ7KDzYNhodQHveqv5zDF9w4T7MIcQoV-eWMZkd9UNiIKvg4ne34tpA4qIeQj8H6SEA2KwE03DlnreU93kXlKclbvT7Y56NKKomqK3Lnx56UP9yC0ylYTyiGHYLAoCxeX8aygvq1vQa1Q..&box_client_name=box-content-preview&box_client_version=1.58.3')
+    else:
+        response = predict_image('https://public.boxcloud.com/api/2.0/internal_files/360355449730/versions/380882352130/representations/jpg_paged_2048x2048/content/1.jpg?access_token=1!31OZja_06R-QBIveNEBh00Re2zvohDPiBOasPwd7LS1altmXBVT0cYvsfu8Hh9D3JTRIsOErodJSbrytHuPxhPE2ej9gid9RWtF7WsxYgiZvM3NHLVRxLdgX9_DUveYd5gCNKkjfaeW2JDEm-AY3FzNa0KoOwuEkhWTAzLXW1RILz1GUeziFr7NfOR5WFyVVK5T9HWw4MRFGvhhQyHzZppU87fuhlJTnZqXFJHaj-KRMT0VOm4HGmbP-LlN9U32p_Hk1lyA3EATSFt9E8FZr5Utf5_0SzlIK9gQlvNdRm8j9v7Y7ShGz4N2A_M7wOeNgXkig3qunpFKq17zZdsBiWNnCt5DpdWU1L6CP2A-4dzQ_7ZAeBAAgjREDmhZM_61STZlq4SP0qakUTMU0QVu3axcFWpas0kzzRqNVZzuK5rF8bvBlZ4t4TzZ2yQF2jGslIgMZ_gt2ChkOLpo1FhxnZl5d-Zcmb3WO3sRHieTvT0Dgq90zc1NEXrgNBO7p82Jqe7AhLY7-_ZeBzCq_ou-nYVnmn2PhYQkk3DUcyJyNSJVDuu4lgP2uvXjIcnPue_lU8A..&box_client_name=box-content-preview&box_client_version=1.58.3')
+
+    output_list = response.get('outputs')[0].get('data').get('concepts')
+    for output in output_list:
+        if (output.get('value') >= threshold_value):
+            create_image_tag(chat_message.id, output.get('name'))
+
+
     # Commit to db
     db.session.commit()
 
-    # # If the message is an image, save the tags above a threshold
-    # threshold_value = 0.98
-    
-    # # temporary while we have no images, set to text
-    # # if (type == 0):
-
-    # response = predict_image("https://public.boxcloud.com/api/2.0/internal_files/360296939794/versions/380820908194/representations/jpg_paged_2048x2048/content/1.jpg?access_token=1!inQjeH66yoHferqPheYSlcq4XhX2oSHK9_4bpIxmoV4svuMO79D79qsVxRcvLmLVN146t-j5KfJGLNxJ2WVhrNjfDTp1B06b6FMkeIP4WLMGFKUoFWsh80frEiY27BvvRX0Pwc0A5VfmRg1FHlKuci2T3aL5nxLeYNvY12yjvMemuVKr4X1lfcMKnQrXSpXR9VvkoG3VZSFoVWtrVd3n0ylZV-XFwtgAiqtuzWpfDBZ20rFWmYN-eVVnVsOpy2jOT0L5H77lxuvupBRH3V01eHKFuFtjiQHd47eG6L6DllN-lO3e_esvzDoiszI0UZt9bzug2wMPP51cDZuPNGzTmB09Wlt-Sfk9ITfov71sKsSSMMJv4Wn8HcAiTH0lZ6dNH2_HujCAO7zL0LZmczBGlV7wj5EoozCh4eZq5lKKSjkzxGH9QsjNMJLzHjyJsZYiyvjl3aCj2xYAoKnMlMZ7msiOO02FIM4i3wIkAIRNpoU5XsGUodY8VY76q2o5GoohcxTZ78T072eG2EgJ8uAl9esyH7ruwGfEjEtDRPtKrt_GwtvPu2wWfwPErImt49rnMA..&box_client_name=box-content-preview&box_client_version=1.58.3")
-    # output_list = response.get('outputs')
-    # print(output_list)
-    # for output in output_list:
-    #     concepts = output.get('concepts')
-    #     print concepts
-    #     # if (output.get('value') >= threshold_value):
-    #         # print(output)
 
 
 def create_image_tag(chat_message_id, tag_name):
     
     # Create image tag
-    image_tag = ImageTag(chat_message_id=chat_message_id, tag_name=tag_name)
+    image_tag = ImageTag(chat_message_id=chat_message_id, name=tag_name)
     db.session.add(image_tag)
 
-    # Commit to db
-    db.session.commit()
+    # # Commit to db
+    # db.session.commit()
 
 
 
@@ -119,7 +129,7 @@ def index():
     # setup params
     chat_id = None
     type = 0
-    text_body = 'Yep, talking to you...'
+    text_body = 'keyword2'
 
     send_message(chat_id, type, text_body);
 
