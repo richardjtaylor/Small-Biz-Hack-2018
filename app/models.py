@@ -21,9 +21,19 @@ class ChatMessage(db.Model):
 
     id = db.Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True)
     chat_id = db.Column(UUID(as_uuid=True), db.ForeignKey('chat.id'))
+    image_tags = db.relationship('ImageTag', backref='chat_message')
     sent_from_self = db.Column(db.Boolean)
-    type = db.Column(db.Enum(MessageType), nullable=False)
+    type = db.Column(db.Integer, nullable=False)
     text_body = db.Column(db.String(5000))
+
+
+class ImageTag(db.Model):
+    __tablename__ = 'image_tag'
+
+    id = db.Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True)
+    chat_message_id = db.Column(UUID(as_uuid=True), db.ForeignKey('chat_message.id'))
+    name = db.Column(db.String(100))
+
 
 
 class Estimate(db.Model):
