@@ -1,8 +1,8 @@
 """empty message
 
-Revision ID: fd8fe195a4d2
+Revision ID: 3e57b1945576
 Revises: 
-Create Date: 2018-12-01 19:44:58.728376
+Create Date: 2018-12-02 00:33:37.016935
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = 'fd8fe195a4d2'
+revision = '3e57b1945576'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -26,7 +26,7 @@ def upgrade():
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('chat_id', postgresql.UUID(as_uuid=True), nullable=True),
     sa.Column('sent_from_self', sa.Boolean(), nullable=True),
-    sa.Column('type', sa.Enum('text', 'image', 'video', name='messagetype'), nullable=False),
+    sa.Column('type', sa.Integer(), nullable=False),
     sa.Column('text_body', sa.String(length=5000), nullable=True),
     sa.ForeignKeyConstraint(['chat_id'], ['chat.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -34,6 +34,9 @@ def upgrade():
     op.create_table('estimate',
     sa.Column('id', postgresql.UUID(as_uuid=True), nullable=False),
     sa.Column('chat_id', postgresql.UUID(as_uuid=True), nullable=True),
+    sa.Column('qb_id', sa.String(length=20), nullable=True),
+    sa.Column('qb_customerRef', sa.String(length=1000), nullable=True),
+    sa.Column('qb_value', sa.String(length=20), nullable=True),
     sa.ForeignKeyConstraint(['chat_id'], ['chat.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

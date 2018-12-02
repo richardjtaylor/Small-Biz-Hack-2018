@@ -13,10 +13,15 @@ class EstimateSchema(ma.ModelSchema):
         model = Estimate
     estimate_items = fields.Nested(EstimateItemSchema, many=True)
 
+class ImageTagSchema(ma.ModelSchema):
+    class Meta:
+        fields = ('id', 'chat_message_id', 'name')
+
 class ChatMessageSchema(ma.ModelSchema):
     class Meta:
-        fields = ('id', 'chat_id', 'sent_from_self', 'type', 'text_body')
+        fields = ('id', 'chat_id', 'image_tags', 'sent_from_self', 'type', 'text_body')
         model = ChatMessage
+    image_tags = fields.Nested(ImageTagSchema, many=True)
 
 class ChatSchema(ma.ModelSchema):
     class Meta:
@@ -28,5 +33,8 @@ class ChatSchema(ma.ModelSchema):
 
 chat_schema = ChatSchema()
 chat_message_schema = ChatMessageSchema()
+chat_messages_schema = ChatMessageSchema(many=True)
+image_tag_schema = ImageTagSchema()
+image_tags_schema = ImageTagSchema(many=True)
 estimate_schema = EstimateSchema()
 estimate_item_schema = EstimateItemSchema()
