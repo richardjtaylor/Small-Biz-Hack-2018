@@ -33,15 +33,23 @@ const InputMessageWrite = styled.input`
 `;
 
 const TypeMessage = ({ onSend, onChange, message }) => {
+  const onKeyPress = e => {
+    console.log("e:key: ", e.key);
+    if (e.key == "Enter") {
+      onSend();
+    }
+  };
+
   return (
     <Container>
       <div>
         <InputMessageWrite
-          placeholder="Write here fool"
+          placeholder="Ask Neil about his project"
           value={message}
           onChange={e => onChange(e.target.value)}
+          onKeyPress={e => onKeyPress(e)}
         />
-        <InputSendButton onClick={() => onSend(message)}>S</InputSendButton>
+        <InputSendButton onClick={() => onSend()}>></InputSendButton>
       </div>
     </Container>
   );

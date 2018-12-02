@@ -4,6 +4,7 @@ import TypeMessage from "./TypeMessage";
 import IncomingMessage from "./IncomingMessage";
 import OutgoingMessage from "./OutgoingMessage";
 import { send_message, receive_message } from "../../api";
+const URL = "http://localhost:5000";
 
 const Title = styled.div`
   height: 50px;
@@ -31,20 +32,42 @@ export class Chat extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      messages: [{ text: "hahah", type: 0 }, { url: "", type: 1 }],
+      messages: [],
       currentMessage: ""
     };
 
     receive_message(newMessage => {
-      console.log("NEW: ", newMessage);
-      this.setState({ messages: [...this.state.messages, newMessage] });
+      if (!!newMessage.text_body) {
+        //don't show empty messages that seem to pop up
+        this.setState({ messages: [...this.state.messages, newMessage] });
+      }
     });
   }
 
+  componentDidMount() {
+    this.fetchMessages();
+  }
+
+  fetchMessages = async () => {
+    const messages = await (await fetch(`${URL}/all_messages`, {
+      method: "GET", // or 'PUT'
+      //body: JSON.stringify(data), // data can be `string` or {object}!
+      headers: {
+        "Content-Type": "application/json"
+      },
+      mode: "cors"
+    })).json();
+
+    this.setState({ messages });
+  };
+
   renderMessages = () => {
     return this.state.messages.map(message => {
-      console.log("here:");
-      return <IncomingMessage message={message} />;
+      return message.sent_from_self == false ? (
+        <IncomingMessage message={message} />
+      ) : (
+        <OutgoingMessage message={message} />
+      );
     });
   };
 
@@ -56,7 +79,10 @@ export class Chat extends Component {
         <TypeMessage
           message={this.state.currentMessage}
           onChange={m => this.setState({ currentMessage: m })}
-          onSend={message => send_message(message)}
+          onSend={() => {
+            send_message(0, this.state.currentMessage);
+            this.setState({ currentMessage: "" });
+          }}
         />
       </Container>
     );

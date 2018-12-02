@@ -1,13 +1,16 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { palette } from "styled-theme";
+import { Flex, Box } from "@rebass/grid";
+import { send_message } from "../../api";
 
 const EstimateContainer = styled.div`
   height: 50vh;
+  padding: 0 10px;
 `;
 
 const EstimateTableContainer = styled.div`
-  height: calc(100% - 65px - 50px);
+  height: calc(100% - 65px - 100px);
 `;
 
 const EstimateHeader = styled.div`
@@ -30,6 +33,7 @@ const EstimateButton = styled.button`
   font-size: 16px;
   outline: none;
   cursor: pointer;
+  font-family: "Titillium Web", sans-serif;
 `;
 
 const EstimateTable = styled.table`
@@ -49,6 +53,7 @@ const EstimateTableRow = styled.tr`
 
 const EstimateTableCell = styled.td`
   font-size: 15px;
+  min-width: 50px;
 `;
 
 const EstimateTableInput = styled.input``;
@@ -68,6 +73,18 @@ const EstimateFooter = styled.div`
   display: flex;
 `;
 
+const AddEstimateButton = styled.button`
+  background: ${palette("primary", 0)} none repeat scroll 0 0;
+  border: medium none;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  font-size: 17px;
+  height: 33px;
+  width: 33px;
+  margin: 10px 0 0 10px;
+`;
+
 export class Estimate extends Component {
   constructor(props) {
     super(props);
@@ -75,7 +92,8 @@ export class Estimate extends Component {
       lineItems: [
         { name: "Labour", quantity: 10, price: 65 },
         { name: "Drywall", quantity: 4, price: 120 }
-      ]
+      ],
+      newLineItem: { name: "", quantity: 0, price: 0 }
     };
   }
 
@@ -92,28 +110,75 @@ export class Estimate extends Component {
     });
   };
 
+  addToLineItems = () => {
+    const { newLineItem, lineItems } = this.state;
+    this.setState({
+      lineItems: [...lineItems, newLineItem],
+      newLineItem: { name: "", quantity: 0, price: 0 }
+    });
+  };
+
   renderEstimateAddNewRow = () => {
+    const { newLineItem } = this.state;
     return (
-      <EstimateTableRow>
-        <EstimateTableCell>
-          <EstimateTableInput type="text" />
-        </EstimateTableCell>
-        <EstimateTableCell>
-          <EstimateTableInput type="number" />
-        </EstimateTableCell>
-        <EstimateTableCell>
-          <EstimateTableInput type="number" />
-        </EstimateTableCell>
-        <EstimateTableCell>0</EstimateTableCell>
-      </EstimateTableRow>
+      <React.Fragment>
+        <EstimateTableRow>
+          <EstimateTableCell>
+            <EstimateTableInput
+              type="text"
+              value={newLineItem.name}
+              onChange={e =>
+                this.setState({
+                  newLineItem: { ...newLineItem, name: e.target.value }
+                })
+              }
+            />
+          </EstimateTableCell>
+          <EstimateTableCell>
+            <EstimateTableInput
+              type="number"
+              value={newLineItem.quantity}
+              onChange={e =>
+                this.setState({
+                  newLineItem: { ...newLineItem, quantity: e.target.value }
+                })
+              }
+            />
+          </EstimateTableCell>
+          <EstimateTableCell>
+            <EstimateTableInput
+              type="number"
+              value={newLineItem.price}
+              onChange={e =>
+                this.setState({
+                  newLineItem: { ...newLineItem, price: e.target.value }
+                })
+              }
+            />
+          </EstimateTableCell>
+          <EstimateTableCell>
+            ${newLineItem.price * newLineItem.quantity}
+          </EstimateTableCell>
+        </EstimateTableRow>
+        <AddEstimateButton onClick={() => this.addToLineItems()}>
+          +
+        </AddEstimateButton>
+      </React.Fragment>
     );
   };
 
-  formatEstimateForText = () => {
-    return `
-      Wood x3 @ $50 ea.
-      Total: $150
-    `;
+  sendEstimate = () => {
+    const message = this.state.lineItems.reduce(
+      (acc, item, i) => {
+        return `${item.name} x${item.quantity} @ ${item.price} ea.
+        ${acc}
+        `;
+      },
+      `TOTAL: $${this.state.lineItems.reduce((acc, item, i) => {
+        return acc + item.price * item.quantity;
+      }, 0)}`
+    );
+    send_message(0, message);
   };
 
   render() {
@@ -135,8 +200,24 @@ export class Estimate extends Component {
           </EstimateTable>
         </EstimateTableContainer>
         <EstimateFooter>
-          <EstimateButton>{"< Update Neil"}</EstimateButton>
-          <EstimateButton>{"Generate Estimate >"}</EstimateButton>
+          <Flex flexDirection="column" style={{ width: "100%" }}>
+            <Box alignSelf="flex-end">
+              <span style={{ fontSize: 28 }}>
+                $
+                {this.state.lineItems.reduce((acc, item, i) => {
+                  return acc + item.price * item.quantity;
+                }, 0)}
+              </span>
+            </Box>
+            <Box>
+              <Flex justifyContent="space-between">
+                <EstimateButton onClick={() => this.sendEstimate()}>
+                  {"< Update Neil"}
+                </EstimateButton>
+                <EstimateButton>{"Generate Estimate >"}</EstimateButton>
+              </Flex>
+            </Box>
+          </Flex>
         </EstimateFooter>
       </EstimateContainer>
     );

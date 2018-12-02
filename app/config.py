@@ -13,6 +13,7 @@ class Config(object):
     HOST="0.0.0.0"
     PORT = 5000
     SECRET_KEY = "xxxx"
+    CORS_HEADERS = '*'
 
 class ProductionConfig(Config):
     PORT = int(os.environ.get('PORT', 5000))

@@ -58,7 +58,7 @@ export class Suggestions extends Component {
   render() {
     return (
       <SuggestedImageContainer>
-        <SuggestionHeader>Related Images</SuggestionHeader>
+        <SuggestionHeader>Similar Work You've Done</SuggestionHeader>
         <SuggestionImageFeed>
           {this.generateSuggestedImageFeed()}
         </SuggestionImageFeed>

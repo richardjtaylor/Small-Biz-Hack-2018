@@ -32,8 +32,9 @@ def receive_message():
         json_body = request.get_json()
         socketio.emit('receive_message', json_body)
 
-        chat_id = None
-        create_chat_message(chat_id, False, json_body.get('type'), json_body.get('text'))
+        chat_id = 'f4c9e67c-fa38-4114-b2dc-4a04f3a70193'
+        chat_message = create_chat_message(chat_id, False, 0, json_body.get('text'))
+        socketio.emit('receive_message', chat_message_schema.dump(chat_message))
     return ('', 204)
 
 
@@ -52,8 +53,8 @@ def receive_message():
 
 
 @app.route('/all_messages', methods=['GET'])
-def return_all_messages(chat_id):
-    messages = db.session.query(ChatMessage).filter(ChatMessage.chat_id==chat_id)
+def return_all_messages():
+    messages = db.session.query(ChatMessage).all() #filter(ChatMessage.chat_id==chat_id)
     
     return chat_messages_schema.jsonify(messages)
 
@@ -61,19 +62,25 @@ def return_all_messages(chat_id):
 
 
 @socketio.on('send_message')
-def send_message(chat_id, type, text_body):
-    print(text_body)
+def send_message(json):
+    text_body = json.get('text_body', '')
+    chat_id = json.get('chat_id', '')
+    chat_type = json.get('type', '')
+
+    print('T: {}'.format(text_body))
 
     client = nexmo.Client(key='c6b89e5c', secret='NiwYj5KhU1ycZFTw')
 
     client.send_message({
         'from': '12262403107',
-        # 'to': '16139211286',
-        'to': '14167096814',
+        'to': '16139211286',
+        #'to': '14167096814',
         'text': text_body,
     })
 
-    create_chat_message(chat_id, True, type, text_body)
+    chat_message = create_chat_message(chat_id, True, chat_type, text_body)
+    print('>>>>>>>>>>>>>>>>>>>>>>CM {}'.format(chat_message))
+    socketio.emit('receive_message', chat_message_schema.dump(chat_message))
 
 
 
@@ -92,8 +99,10 @@ def create_chat_message(chat_id, sent_from_self, type, text_body):
     threshold_value = 0.95
     
     # # temporary while we have no images, set to text
-    if ('keyword1' in text_body):
+    if (text_body.find('faucet') > -1):
         response = predict_image('https://public.boxcloud.com/api/2.0/internal_files/360357061737/versions/380883820137/representations/jpg_paged_2048x2048/content/1.jpg?access_token=1!tXTIrfTKpLSZ5MlYCWOQYQHSoMYaO7-bTkSM0g0j1RHCZcTMSUJ0RbzK4dLGTfVSW-3t4jb5bW1RSzdW8zB_S8MXVZsLUCglYQvEWZi3IHQRK5dYCEYg0JcuGPqlAc_IQByHw0yTovYCefr1PW_xa1vlmb2uNmWaoCYpVJXvoZ89oblCtRCH171dq0_2wmk6mMALBpmCzRHCnQ8yumufdn1WC-dJr639qes6yB3Jrt_0pCWsIAYlYgZXEaZYFt4fxLZ9KJaVTHqt_D1qvWwq8K0ibC-1cq5_7QJMK1f_2wD7lpLWSaJYK64rC_Vpi6gFN6CfArT66PjiUrj8HsxzBM_POYZUeNzvQGZoOxgREMfP1IPx72lrOZpf_jfXG45AMC6No2rgWbki7HvZJKpK2faBF66Vr9kSkMxKqvU04ZQ7lmzKNFqMBEqWvGBAR1_K6TG0TbDggBRuWR5A6xrRXjBHa3C_U3X2FMzAzT0QDIuk5QUtzftWMnncM6-aP4B9Pt1zTUnTK6Ol_UZqF9ae-iryRPP2LPaBBw5dzdlhPvZTWFbSqn93zOMVMgO_bywIYw..&box_client_name=box-content-preview&box_client_version=1.58.3')
+        chat_message.type = 1
+        chat_message.text_body = 'https://public.boxcloud.com/api/2.0/internal_files/360357061737/versions/380883820137/representations/jpg_paged_2048x2048/content/1.jpg?access_token=1!tXTIrfTKpLSZ5MlYCWOQYQHSoMYaO7-bTkSM0g0j1RHCZcTMSUJ0RbzK4dLGTfVSW-3t4jb5bW1RSzdW8zB_S8MXVZsLUCglYQvEWZi3IHQRK5dYCEYg0JcuGPqlAc_IQByHw0yTovYCefr1PW_xa1vlmb2uNmWaoCYpVJXvoZ89oblCtRCH171dq0_2wmk6mMALBpmCzRHCnQ8yumufdn1WC-dJr639qes6yB3Jrt_0pCWsIAYlYgZXEaZYFt4fxLZ9KJaVTHqt_D1qvWwq8K0ibC-1cq5_7QJMK1f_2wD7lpLWSaJYK64rC_Vpi6gFN6CfArT66PjiUrj8HsxzBM_POYZUeNzvQGZoOxgREMfP1IPx72lrOZpf_jfXG45AMC6No2rgWbki7HvZJKpK2faBF66Vr9kSkMxKqvU04ZQ7lmzKNFqMBEqWvGBAR1_K6TG0TbDggBRuWR5A6xrRXjBHa3C_U3X2FMzAzT0QDIuk5QUtzftWMnncM6-aP4B9Pt1zTUnTK6Ol_UZqF9ae-iryRPP2LPaBBw5dzdlhPvZTWFbSqn93zOMVMgO_bywIYw..&box_client_name=box-content-preview&box_client_version=1.58.3'
     elif ('keyword2' in text_body):
         response = predict_image('https://public.boxcloud.com/api/2.0/internal_files/360359850255/versions/380887063455/representations/jpg_paged_2048x2048/content/1.jpg?access_token=1!E613Lu64PJAAs1PIcDRKD9LhYBC09LPTsWTZN-_O3u2ZiqllQDXIvxlUYiDzcTwHIvHEdoVQWoJ0KbD1iogN_TAVU_L-u64haQ8nsI5CfYyJ2s7HNN0uwqqC6iMlNEm3BFtLQXpbqKYsFL90BQuUJtEHrvhsYEqlJPFM1dwNF-GoXblT44ozisZascnhXauv4Md-7WmyF7CeI3yr52Tx0auH5bZvcCOVaL5YiqdpoECL7CHTmFwjviFGHjnrIKcI2YdDq_xB6yHkAx_-xQ-5JJral1CXThArLLtmezS7d4gJx-kotbIQs0pxf2zPek4E4B0k9wyH33LIr6WXTbpCchSSATLH66jZdGw713JdR7gglERULx2N7K5_a7ts5Jym-IHWK_lHuID_-2T7p-nZfuRKl7wRjieUmT-jzUkj4off-KQK50P8gJAk1ie2vn4bhb-Hd8A3MfWP4YrF-3Uhl8eQ84x8HYrEmhV2jdAi8rQYi_d_HPGdU1pk5vn2sFNfI0J4Q8yLSbXqeEbxZV40lIq7HSzCe39lX1BDgqHRstEiOaw3AqW9BySZP43-6DpCbA..&box_client_name=box-content-preview&box_client_version=1.58.3')
     elif ('keyword3' in text_body):
@@ -109,6 +118,8 @@ def create_chat_message(chat_id, sent_from_self, type, text_body):
 
     # Commit to db
     db.session.commit()
+    print('ANOTHER CM: {}',format(chat_message))
+    return chat_message
 
 
 
@@ -131,7 +142,7 @@ def index():
     type = 0
     text_body = 'keyword2'
 
-    send_message(chat_id, type, text_body);
+    send_message(chat_id, type, text_body)
 
     # return jsonify({'message': 'Hellewwww'})
     return return_all_messages(None)

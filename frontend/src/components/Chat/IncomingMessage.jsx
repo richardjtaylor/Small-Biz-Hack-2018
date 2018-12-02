@@ -37,10 +37,10 @@ const MessageTime = styled.span`
 const IncomingMessage = ({ message }) => {
   const generateBody = () => {
     return message.type === 0 ? (
-      <ReceivedMessageParagraph>{message.text}</ReceivedMessageParagraph>
+      <ReceivedMessageParagraph>{message.text_body}</ReceivedMessageParagraph>
     ) : (
       <ReceivedMessageImage
-        style={{ background: "url(https://bit.ly/2FRw47x) 0% 0% no-repeat" }}
+        style={{ backgroundImage: `url(${message.text_body})` }}
       />
     );
   };

@@ -23,13 +23,6 @@ const GlobalStyle = createGlobalStyle`
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      message: ""
-    };
-    receive_message(message => {
-      console.log(message);
-      this.setState({ message });
-    });
   }
 
   render() {

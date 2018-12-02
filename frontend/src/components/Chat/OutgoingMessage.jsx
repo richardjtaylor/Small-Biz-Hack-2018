@@ -28,11 +28,11 @@ const MessageTime = styled.span`
   margin: 8px 0 0;
 `;
 
-const OutgoingMessage = ({ text }) => {
+const OutgoingMessage = ({ message }) => {
   return (
     <OutgoingMessageContainer>
       <SentMessage>
-        <SentMessageParagraph>{text}</SentMessageParagraph>
+        <SentMessageParagraph>{message.text_body}</SentMessageParagraph>
         <MessageTime> 11:01 AM | June 9</MessageTime>
       </SentMessage>
     </OutgoingMessageContainer>
